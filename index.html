@@ -88,6 +88,11 @@
         gap: 12px;
       }
 
+      .field-group {
+        display: grid;
+        gap: 10px;
+      }
+
       label {
         font-size: 0.88rem;
         font-weight: 700;
@@ -127,6 +132,18 @@
 
       button:hover {
         background: var(--accent-dark);
+      }
+
+      .secondary-button {
+        margin-top: 0;
+        border: 1px solid #dedafc;
+        background: #fff;
+        color: var(--accent);
+      }
+
+      .secondary-button:hover {
+        background: #f7f6ff;
+        color: var(--accent-dark);
       }
 
       button:active {
@@ -179,6 +196,13 @@
         font-size: 0.76rem;
       }
 
+      .average-note {
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-align: center;
+      }
+
       .message {
         min-height: 1.25em;
         margin: 12px 0 0;
@@ -223,45 +247,97 @@
           </svg>
           Quick &amp; easy
         </p>
-        <h1>How old are you?</h1>
-        <p class="intro">Enter your date of birth and find out your exact age in years, months, and days.</p>
+        <h1>Compare your ages</h1>
+        <p class="intro">Enter both dates of birth to find each person’s exact age in years, months, and days.</p>
 
         <form id="age-form">
-          <label for="birth-date">Your date of birth</label>
-          <input id="birth-date" name="birthDate" type="date" required>
-          <button type="submit">Calculate my age</button>
+          <div class="field-group">
+            <label for="birth-date">First person’s date of birth</label>
+            <input id="birth-date" name="birthDate" type="date" required>
+          </div>
+          <div class="field-group">
+            <label for="second-birth-date">Second person’s date of birth</label>
+            <input id="second-birth-date" name="secondBirthDate" type="date" required>
+          </div>
+          <button type="submit">Calculate both ages</button>
+          <button class="secondary-button" id="calculate-average" type="button">Calculate average age</button>
         </form>
 
-        <section class="result" aria-live="polite" aria-atomic="true">
-          <p class="result-label" id="result-label">Your age will appear here</p>
-          <div class="age" aria-label="Age">
+        <div id="results">
+          <section class="result" aria-live="polite" aria-atomic="true">
+            <p class="result-label" id="first-result-label">First person’s age will appear here</p>
+            <div class="age" aria-label="First person’s age">
+              <div class="age-part">
+                <span class="age-value" id="first-years">—</span>
+                <span class="age-unit">years</span>
+              </div>
+              <div class="age-part">
+                <span class="age-value" id="first-months">—</span>
+                <span class="age-unit">months</span>
+              </div>
+              <div class="age-part">
+                <span class="age-value" id="first-days">—</span>
+                <span class="age-unit">days</span>
+              </div>
+            </div>
+          </section>
+          <section class="result" aria-live="polite" aria-atomic="true">
+            <p class="result-label" id="second-result-label">Second person’s age will appear here</p>
+            <div class="age" aria-label="Second person’s age">
+              <div class="age-part">
+                <span class="age-value" id="second-years">—</span>
+                <span class="age-unit">years</span>
+              </div>
+              <div class="age-part">
+                <span class="age-value" id="second-months">—</span>
+                <span class="age-unit">months</span>
+              </div>
+              <div class="age-part">
+                <span class="age-value" id="second-days">—</span>
+                <span class="age-unit">days</span>
+              </div>
+            </div>
+          </section>
+        </div>
+        <section class="result" id="average-result" aria-live="polite" aria-atomic="true" hidden>
+          <p class="result-label">Average age for both people</p>
+          <div class="age">
             <div class="age-part">
-              <span class="age-value" id="years">—</span>
+              <span class="age-value" id="average-years">—</span>
               <span class="age-unit">years</span>
             </div>
-            <div class="age-part">
-              <span class="age-value" id="months">—</span>
-              <span class="age-unit">months</span>
-            </div>
-            <div class="age-part">
-              <span class="age-value" id="days">—</span>
-              <span class="age-unit">days</span>
-            </div>
           </div>
-          <p class="message" id="message" role="status"></p>
+          <p class="average-note">The average is shown in decimal years.</p>
         </section>
+        <p class="message" id="message" role="status"></p>
       </div>
       <footer>Your date of birth stays in your browser.</footer>
     </main>
 
     <script>
       const form = document.querySelector("#age-form");
-      const dateInput = document.querySelector("#birth-date");
+      const dateInputs = [
+        document.querySelector("#birth-date"),
+        document.querySelector("#second-birth-date"),
+      ];
+      const averageButton = document.querySelector("#calculate-average");
+      const averageResult = document.querySelector("#average-result");
+      const averageYears = document.querySelector("#average-years");
       const message = document.querySelector("#message");
-      const resultLabel = document.querySelector("#result-label");
-      const yearOutput = document.querySelector("#years");
-      const monthOutput = document.querySelector("#months");
-      const dayOutput = document.querySelector("#days");
+      const results = [
+        {
+          label: document.querySelector("#first-result-label"),
+          years: document.querySelector("#first-years"),
+          months: document.querySelector("#first-months"),
+          days: document.querySelector("#first-days"),
+        },
+        {
+          label: document.querySelector("#second-result-label"),
+          years: document.querySelector("#second-years"),
+          months: document.querySelector("#second-months"),
+          days: document.querySelector("#second-days"),
+        },
+      ];
 
       function localDateString(date) {
         const year = date.getFullYear();
@@ -303,28 +379,68 @@
         return { years, months, days };
       }
 
-      dateInput.max = localDateString(new Date());
+      function getCalculationDates() {
+        message.textContent = "";
+
+        const todayValue = localDateString(new Date());
+        dateInputs.forEach((input) => {
+          input.max = todayValue;
+        });
+        const today = parseDate(todayValue);
+        const birthDates = dateInputs.map((input) => parseDate(input.value));
+        if (!today || birthDates.some((birthDate) => !birthDate)) {
+          message.textContent = "Please enter valid dates of birth for both people.";
+          return null;
+        }
+        if (birthDates.some((birthDate) => birthDate > today)) {
+          message.textContent = "Neither date of birth can be in the future.";
+          return null;
+        }
+
+        return { birthDates, today };
+      }
+
+      dateInputs.forEach((input) => {
+        input.max = localDateString(new Date());
+        input.addEventListener("input", () => {
+          message.textContent = "";
+          averageResult.hidden = true;
+          averageYears.textContent = "—";
+          results.forEach((result, index) => {
+            result.years.textContent = "—";
+            result.months.textContent = "—";
+            result.days.textContent = "—";
+            result.label.textContent = `Person ${index + 1}’s age will appear here`;
+          });
+        });
+      });
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-        message.textContent = "";
+        const calculation = getCalculationDates();
+        if (!calculation) return;
 
-        const birthDate = parseDate(dateInput.value);
-        const today = parseDate(localDateString(new Date()));
-        if (!birthDate || !today) {
-          message.textContent = "Please enter a valid date of birth.";
-          return;
-        }
-        if (birthDate > today) {
-          message.textContent = "Your date of birth cannot be in the future.";
-          return;
-        }
+        const { birthDates, today } = calculation;
+        birthDates.forEach((birthDate, index) => {
+          const age = calculateAge(birthDate, today);
+          results[index].years.textContent = age.years;
+          results[index].months.textContent = age.months;
+          results[index].days.textContent = age.days;
+          results[index].label.textContent = `Person ${index + 1}’s exact age`;
+        });
+      });
 
-        const age = calculateAge(birthDate, today);
-        yearOutput.textContent = age.years;
-        monthOutput.textContent = age.months;
-        dayOutput.textContent = age.days;
-        resultLabel.textContent = "Your exact age is";
+      averageButton.addEventListener("click", () => {
+        const calculation = getCalculationDates();
+        if (!calculation) return;
+
+        const millisecondsPerDay = 24 * 60 * 60 * 1000;
+        const averageAgeInDays = calculation.birthDates.reduce(
+          (total, birthDate) => total + (calculation.today - birthDate) / millisecondsPerDay,
+          0,
+        ) / calculation.birthDates.length;
+        averageYears.textContent = (averageAgeInDays / 365.2425).toFixed(2);
+        averageResult.hidden = false;
       });
     </script>
   </body>

@@ -155,6 +155,30 @@
         outline-offset: 3px;
       }
 
+      .button-link {
+        display: block;
+        margin-top: 20px;
+        padding: 17px 20px;
+        border: 1px solid #dedafc;
+        border-radius: 12px;
+        color: var(--accent);
+        font-size: 0.96rem;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        transition: background 160ms ease, color 160ms ease;
+      }
+
+      .button-link:hover {
+        background: #f7f6ff;
+        color: var(--accent-dark);
+      }
+
+      .button-link:focus-visible {
+        outline: 3px solid #aaa2ff;
+        outline-offset: 3px;
+      }
+
       .result {
         margin-top: 28px;
         padding: 22px;
@@ -331,6 +355,7 @@
           <p class="average-note">The average is shown in decimal years.</p>
         </section>
         <p class="message" id="message" role="status"></p>
+        <a class="button-link" href="name.html">Enter your name</a>
       </div>
       <footer>Your date of birth stays in your browser.</footer>
     </main>

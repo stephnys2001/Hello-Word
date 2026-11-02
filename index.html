@@ -272,7 +272,7 @@
           Quick &amp; easy
         </p>
         <h1>Compare your ages</h1>
-        <p class="intro">Enter all three dates of birth to find each person’s exact age in years, months, and days.</p>
+        <p class="intro">Enter both dates of birth to find each person’s exact age in years, months, and days.</p>
 
         <form id="age-form">
           <div class="field-group">
@@ -283,12 +283,8 @@
             <label for="second-birth-date">Second person’s date of birth</label>
             <input id="second-birth-date" name="secondBirthDate" type="date" required>
           </div>
-          <div class="field-group">
-            <label for="third-birth-date">Third person’s date of birth</label>
-            <input id="third-birth-date" name="thirdBirthDate" type="date" required>
-          </div>
-          <button type="submit">Calculate all ages</button>
-          <button class="secondary-button" id="calculate-average" type="button">Calculate average age for all three</button>
+          <button type="submit">Calculate both ages</button>
+          <button class="secondary-button" id="calculate-average" type="button">Calculate average age</button>
         </form>
 
         <div id="results">
@@ -326,26 +322,9 @@
               </div>
             </div>
           </section>
-          <section class="result" aria-live="polite" aria-atomic="true">
-            <p class="result-label" id="third-result-label">Third person’s age will appear here</p>
-            <div class="age" aria-label="Third person’s age">
-              <div class="age-part">
-                <span class="age-value" id="third-years">—</span>
-                <span class="age-unit">years</span>
-              </div>
-              <div class="age-part">
-                <span class="age-value" id="third-months">—</span>
-                <span class="age-unit">months</span>
-              </div>
-              <div class="age-part">
-                <span class="age-value" id="third-days">—</span>
-                <span class="age-unit">days</span>
-              </div>
-            </div>
-          </section>
         </div>
         <section class="result" id="average-result" aria-live="polite" aria-atomic="true" hidden>
-          <p class="result-label">Average age for all three people</p>
+          <p class="result-label">Average age for both people</p>
           <div class="age">
             <div class="age-part">
               <span class="age-value" id="average-years">—</span>
@@ -355,7 +334,6 @@
           <p class="average-note">The average is shown in decimal years.</p>
         </section>
         <p class="message" id="message" role="status"></p>
-        <a class="button-link" href="name.html">Enter your name</a>
       </div>
       <footer>Your date of birth stays in your browser.</footer>
     </main>
@@ -365,7 +343,6 @@
       const dateInputs = [
         document.querySelector("#birth-date"),
         document.querySelector("#second-birth-date"),
-        document.querySelector("#third-birth-date"),
       ];
       const averageButton = document.querySelector("#calculate-average");
       const averageResult = document.querySelector("#average-result");
@@ -383,12 +360,6 @@
           years: document.querySelector("#second-years"),
           months: document.querySelector("#second-months"),
           days: document.querySelector("#second-days"),
-        },
-        {
-          label: document.querySelector("#third-result-label"),
-          years: document.querySelector("#third-years"),
-          months: document.querySelector("#third-months"),
-          days: document.querySelector("#third-days"),
         },
       ];
 
@@ -442,11 +413,11 @@
         const today = parseDate(todayValue);
         const birthDates = dateInputs.map((input) => parseDate(input.value));
         if (!today || birthDates.some((birthDate) => !birthDate)) {
-          message.textContent = "Please enter a valid date of birth for all three people.";
+          message.textContent = "Please enter valid dates of birth for both people.";
           return null;
         }
         if (birthDates.some((birthDate) => birthDate > today)) {
-          message.textContent = "None of the dates of birth can be in the future.";
+          message.textContent = "Neither date of birth can be in the future.";
           return null;
         }
 

@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7fb">
+    <meta name="description" content="Find your exact age in years, months, and days with a simple age calculator.">
+    <title>Age calculator</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+        color: #242743;
+        background: #f6f7fb;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-optical-sizing: auto;
+        --muted: #777b91;
+        --accent: #6558d9;
+        --accent-dark: #5145c4;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 32px 20px;
+        background:
+          radial-gradient(ellipse at 12% 16%, #e8e8ff 0, transparent 34%),
+          radial-gradient(ellipse at 90% 86%, #e7f2ff 0, transparent 32%),
+          #f6f7fb;
+      }
+
+      .calculator {
+        width: min(100%, 520px);
+        overflow: hidden;
+        border: 1px solid #eaebf2;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 24px 70px rgb(46 47 91 / 10%);
+      }
+
+      .content {
+        padding: 40px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 16px;
+        color: var(--accent);
+        font-size: 0.75rem;
+        font-weight: 750;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 7vw, 2.75rem);
+        letter-spacing: -0.06em;
+        line-height: 1.08;
+      }
+
+      .intro {
+        margin: 14px 0 30px;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      form {
+        display: grid;
+        gap: 12px;
+      }
+
+      label {
+        font-size: 0.88rem;
+        font-weight: 700;
+      }
+
+      input[type="date"] {
+        width: 100%;
+        min-height: 54px;
+        padding: 0 15px;
+        border: 1px solid #dfe1ec;
+        border-radius: 12px;
+        outline: none;
+        background: #fff;
+        color: #242743;
+        font: inherit;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      input[type="date"]:focus-visible {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgb(101 88 217 / 14%);
+      }
+
+      button {
+        min-height: 54px;
+        margin-top: 8px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.96rem;
+        font-weight: 700;
+        transition: background 160ms ease, transform 160ms ease;
+      }
+
+      button:hover {
+        background: var(--accent-dark);
+      }
+
+      button:active {
+        transform: translateY(1px);
+      }
+
+      button:focus-visible {
+        outline: 3px solid #aaa2ff;
+        outline-offset: 3px;
+      }
+
+      .result {
+        margin-top: 28px;
+        padding: 22px;
+        border: 1px solid #ebe9ff;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #f8f7ff, #f4f8ff);
+      }
+
+      .result-label {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        font-weight: 650;
+      }
+
+      .age {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .age-part {
+        text-align: center;
+      }
+
+      .age-value {
+        display: block;
+        color: var(--accent);
+        font-size: clamp(1.75rem, 8vw, 2.3rem);
+        font-weight: 750;
+        letter-spacing: -0.06em;
+        line-height: 1.2;
+      }
+
+      .age-unit {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+
+      .message {
+        min-height: 1.25em;
+        margin: 12px 0 0;
+        color: #b42318;
+        font-size: 0.85rem;
+      }
+
+      footer {
+        padding: 15px 40px;
+        border-top: 1px solid #f0f0f5;
+        color: #888b9c;
+        font-size: 0.78rem;
+        text-align: center;
+      }
+
+      @media (max-width: 480px) {
+        .content {
+          padding: 30px 24px;
+        }
+
+        footer {
+          padding: 14px 24px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="calculator">
+      <div class="content">
+        <p class="eyebrow">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+            <path d="M7 3v3m10-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Quick &amp; easy
+        </p>
+        <h1>How old are you?</h1>
+        <p class="intro">Enter your date of birth and find out your exact age in years, months, and days.</p>
+
+        <form id="age-form">
+          <label for="birth-date">Your date of birth</label>
+          <input id="birth-date" name="birthDate" type="date" required>
+          <button type="submit">Calculate my age</button>
+        </form>
+
+        <section class="result" aria-live="polite" aria-atomic="true">
+          <p class="result-label" id="result-label">Your age will appear here</p>
+          <div class="age" aria-label="Age">
+            <div class="age-part">
+              <span class="age-value" id="years">—</span>
+              <span class="age-unit">years</span>
+            </div>
+            <div class="age-part">
+              <span class="age-value" id="months">—</span>
+              <span class="age-unit">months</span>
+            </div>
+            <div class="age-part">
+              <span class="age-value" id="days">—</span>
+              <span class="age-unit">days</span>
+            </div>
+          </div>
+          <p class="message" id="message" role="status"></p>
+        </section>
+      </div>
+      <footer>Your date of birth stays in your browser.</footer>
+    </main>
+
+    <script>
+      const form = document.querySelector("#age-form");
+      const dateInput = document.querySelector("#birth-date");
+      const message = document.querySelector("#message");
+      const resultLabel = document.querySelector("#result-label");
+      const yearOutput = document.querySelector("#years");
+      const monthOutput = document.querySelector("#months");
+      const dayOutput = document.querySelector("#days");
+
+      function localDateString(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function parseDate(value) {
+        const parts = value.split("-").map(Number);
+        if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+
+        const [year, month, day] = parts;
+        const date = new Date(Date.UTC(year, month - 1, day));
+        if (
+          date.getUTCFullYear() !== year ||
+          date.getUTCMonth() !== month - 1 ||
+          date.getUTCDate() !== day
+        ) {
+          return null;
+        }
+        return date;
+      }
+
+      function calculateAge(birthDate, today) {
+        let years = today.getUTCFullYear() - birthDate.getUTCFullYear();
+        let months = today.getUTCMonth() - birthDate.getUTCMonth();
+        let days = today.getUTCDate() - birthDate.getUTCDate();
+
+        if (days < 0) {
+          months -= 1;
+          days += new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 0)).getUTCDate();
+        }
+        if (months < 0) {
+          years -= 1;
+          months += 12;
+        }
+
+        return { years, months, days };
+      }
+
+      dateInput.max = localDateString(new Date());
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        message.textContent = "";
+
+        const birthDate = parseDate(dateInput.value);
+        const today = parseDate(localDateString(new Date()));
+        if (!birthDate || !today) {
+          message.textContent = "Please enter a valid date of birth.";
+          return;
+        }
+        if (birthDate > today) {
+          message.textContent = "Your date of birth cannot be in the future.";
+          return;
+        }
+
+        const age = calculateAge(birthDate, today);
+        yearOutput.textContent = age.years;
+        monthOutput.textContent = age.months;
+        dayOutput.textContent = age.days;
+        resultLabel.textContent = "Your exact age is";
+      });
+    </script>
+  </body>
+</html>
